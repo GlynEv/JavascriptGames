@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+  <!--<![endif]-->
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Mine Sweeper Game</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="app.css" />
+  </head>
+  <body>
+    <!--[if lt IE 7]>
+      <p class="browsehappy">
+        You are using an <strong>outdated</strong> browser. Please
+        <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.
+      </p>
+    <![endif]-->
+    <h1>Mine Sweeper Game</h1>
+
+    <script>
+        const CONFIG = {
+            mode: {
+                easy:{
+                   size: {
+                       rows: 10,
+                       cols: 10,
+                   },
+                   bombs: 10 
+                },
+                medium:{
+                   size: {
+                       rows: 20,
+                       cols: 20,
+                   },
+                   bombs: 50 
+                },
+                hard:{
+                   size: {
+                       rows: 20,
+                       cols: 30,
+                   },
+                   bombs: 100 
+                },
+            },
+
+            //Current Mode
+            currentMode: "easy",
+        }
+    </script>
+
+    <hr/>
+
+    <table id="game-table"></table>
+
+    <script src="app.js" async defer></script>
+  </body>
+</html>
