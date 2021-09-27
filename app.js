@@ -1,4 +1,5 @@
 const gameTableHTML = document.getElementById("game-table");
+const newCellClassName = "new-cell";
 
 const setupGame = () => {
 
@@ -17,27 +18,37 @@ const setupGame = () => {
     CONFIG.bombLocations = bombCells;
 
     //BuildRows
-    let i, row, col, cellID, bombsAroundCell;
+    let i, row, col, cellID, bombsAroundCell, cellSpan, cellContent;
     for(i = 0; i < gameSize.rows; i++) {
         row = gameTableHTML.insertRow(i);
 
         for(j = 1; j <= gameSize.cols; j++) {
             col = row.insertCell(j-1);
+            col.classList.add(newCellClassName);
+            col.setAttribute("row", i);
+            col.setAttribute("col", j);
 
             cellID = makeCellID(i, j);
 
+            cellContent = "";
             if(bombCells.indexOf(cellID) > -1){
-                col.innerHTML = "X";
+                cellContent = "X";
+                col.setAttribute("hasBomb", 1);
             } else {
                 bombsAroundCell = 0;
                 getCellIDsAround(i, j).map(aroundCellID => {
                     if(bombCells.indexOf(aroundCellID) > -1) bombsAroundCell++;
                 })
 
-                if(bombsAroundCell) col.innerHTML = bombsAroundCell;
+                if(bombsAroundCell) cellContent = bombsAroundCell;
 
             }
 
+            cellSpan = document.createElement("span");
+            cellSpan.classList.add("cell-content");
+            cellSpan.innerHTML = cellContent;
+
+            col.appendChild(cellSpan);
         }
     }
 };
@@ -70,6 +81,34 @@ const getCurrentGameMode = () => {
     return CONFIG.mode[CONFIG.currentMode];
 }
 
+const newCellClicked = cell => {
+    const row = parseInt(cell.getAttribute("row"), 0xa),
+        col = parseInt(cell.getAttribute("col"), 0xa),
+        hasBomb = parseInt(cell.getAttribute("hasBomb"), 0xa) == 1;
+    
+    if(hasBomb){
+        alert("DEAD");
+        return;
+    }
+
+    //Show Content
+    cell.classList.remove(newCellClassName);
+
+}
+
 (() =>{
     setupGame();
+
+    //Listen for clicks on game table
+    gameTableHTML.onmousedown = e => {
+        e = e || window.event;
+
+        const target = e.target;
+        
+        //Clicked on cell
+        if(target.matches("." + newCellClassName)) {
+            //Process Clicked Cell
+            newCellClicked(target);
+        }
+    }
 })()

@@ -4,3 +4,16 @@
 
     border: 1px solid #000;
 }
+
+.new-cell {
+    background-color: #CCC;
+    cursor: pointer;
+}
+
+.new-cell:hover{
+    background-color: cornsilk;
+}
+
+.new-cell > .cell-content {
+    display: none;
+}
