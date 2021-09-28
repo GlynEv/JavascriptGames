@@ -1,5 +1,7 @@
 const gameTableHTML = document.getElementById("game-table");
 const newCellClassName = "new-cell";
+const cellIDName = "game-cell-id-";
+const flagClassName = "cell-flag";
 
 const setupGame = () => {
 
@@ -29,6 +31,7 @@ const setupGame = () => {
             col.setAttribute("col", j);
 
             cellID = makeCellID(i, j);
+            col.id = cellIDName + cellID;
 
             cellContent = "";
             if(bombCells.indexOf(cellID) > -1){
@@ -41,7 +44,7 @@ const setupGame = () => {
                 })
 
                 if(bombsAroundCell) cellContent = bombsAroundCell;
-
+                col.setAttribute("bombsAroundCell", bombsAroundCell);
             }
 
             cellSpan = document.createElement("span");
@@ -81,11 +84,40 @@ const getCurrentGameMode = () => {
     return CONFIG.mode[CONFIG.currentMode];
 }
 
-const newCellClicked = cell => {
+const newCellClicked = (cell, isRightBtn) => {
     const row = parseInt(cell.getAttribute("row"), 0xa),
         col = parseInt(cell.getAttribute("col"), 0xa),
-        hasBomb = parseInt(cell.getAttribute("hasBomb"), 0xa) == 1;
+        hasBomb = parseInt(cell.getAttribute("hasBomb"), 0xa) == 1,
+        bombsAroundCell = parseInt(cell.getAttribute("bombsAroundCell"), 0xa);
     
+    //Right Click (mark as bomb - Flag)
+    if(isRightBtn == true) {
+
+        const markedAsBomb = parseInt(cell.getAttribute("markedAsBomb"), 0xa) == 1;
+        
+        cell.setAttribute("markedAsBomb", markedAsBomb ? 0 : 1)
+
+        if(markedAsBomb){
+            cell
+            //Unmarked flag
+            const removeFlagImage = cell.getElementsByClassName(flagClassName);
+            cell.removeChild(removeFlagImage[0]); 
+        } else {
+            //Add flag
+            const flagImage = document.createElement("img");
+            flagImage.setAttribute("src", "images/flag.png");
+            flagImage.setAttribute("width", "100%");
+            flagImage.setAttribute("height", "100%");
+            flagImage.setAttribute("alt", "flag");
+            flagImage.classList.add(flagClassName);
+            cell.appendChild(flagImage);
+        }
+
+        
+
+        return;
+    }
+
     if(hasBomb){
         alert("DEAD");
         return;
@@ -93,6 +125,22 @@ const newCellClicked = cell => {
 
     //Show Content
     cell.classList.remove(newCellClassName);
+
+    //If blank cell
+    if(bombsAroundCell == 0){
+        //Click around each square
+        let cellToClick;
+
+        getCellIDsAround(row, col).map(aroundCellID => {
+
+            //Click on cell
+            cellToClick = document.getElementById(cellIDName + aroundCellID);
+            if (cellToClick && cellToClick.matches("." + newCellClassName)) 
+            newCellClicked(cellToClick);
+        })
+    }
+
+
 
 }
 
@@ -102,13 +150,32 @@ const newCellClicked = cell => {
     //Listen for clicks on game table
     gameTableHTML.onmousedown = e => {
         e = e || window.event;
-
-        const target = e.target;
+ 
+        let target = e.target, isRightBtn, unmarkFlag;
         
-        //Clicked on cell
-        if(target.matches("." + newCellClassName)) {
-            //Process Clicked Cell
-            newCellClicked(target);
+        if("which" in e) {
+            //Gecko (Firefox), Webkit (Safari/Chrome) & Opera
+            isRightBtn = e.which == 3;
+        } else if("button" in e) {
+            //IE, Opera
+            isRightBtn = e.button == 2;
         }
+
+        //Right click on flag
+        unmarkFlag = target.matches("." + flagClassName) && isRightBtn
+        if(unmarkFlag) target = target.parentNode;
+
+        //Clicked on cell
+        if(target.matches("." + newCellClassName) || unmarkFlag) {
+            //Process Clicked Cell
+            newCellClicked(target, isRightBtn);
+        }
+    };
+
+    //Right click for bomb mark
+    gameTableHTML.oncontextmenu = () => {
+        return false;
     }
-})()
+
+
+})();
