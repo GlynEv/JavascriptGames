@@ -118,8 +118,24 @@ const newCellClicked = (cell, isRightBtn) => {
         return;
     }
 
+    //Lose game
     if(hasBomb){
         alert("DEAD");
+
+
+        //Show all bombs
+        let cell,bombImage;
+        CONFIG.bombLocations.map(cellID => {
+            cell = document.getElementById(cellIDName + cellID);
+            bombImage = document.createElement("img");
+            bombImage.setAttribute("src", "images/bomb.png");
+            bombImage.setAttribute("width", "100%");
+            bombImage.setAttribute("height", "100%");
+            bombImage.setAttribute("alt", "bomb");
+            bombImage.classList.add(flagClassName);
+            cell.innerHTML = "";
+            cell.appendChild(bombImage);
+        })
         return;
     }
 
