@@ -1,10 +1,12 @@
 const gameTableHTML = document.getElementById("game-table");
+const modeSelect = document.getElementById("mode-setting");
 const newCellClassName = "new-cell";
 const cellIDName = "game-cell-id-";
 const flagClassName = "cell-flag";
 
 const setupGame = () => {
 
+    CONFIG.currentMode = modeSelect.value;
     const gameMode = getCurrentGameMode(),
         gameSize = gameMode.size;
 
@@ -20,6 +22,7 @@ const setupGame = () => {
     CONFIG.bombLocations = bombCells;
 
     //BuildRows
+    gameTableHTML.innerHTML = "";
     let i, row, col, cellID, bombsAroundCell, cellSpan, cellContent;
     for(i = 0; i < gameSize.rows; i++) {
         row = gameTableHTML.insertRow(i);
@@ -54,6 +57,8 @@ const setupGame = () => {
             col.appendChild(cellSpan);
         }
     }
+
+    CONFIG.gamePlayable = true;
 };
 
 const getCellIDsAround = (row,col) => {
@@ -136,6 +141,7 @@ const newCellClicked = (cell, isRightBtn) => {
             cell.innerHTML = "";
             cell.appendChild(bombImage);
         })
+        CONFIG.gamePlayable = false;
         return;
     }
 
@@ -161,13 +167,27 @@ const newCellClicked = (cell, isRightBtn) => {
 }
 
 (() =>{
+
+    //Build Select Options
+    let option;
+    Object.keys(CONFIG.mode).forEach(modeKey => {
+        option = document.createElement("option");
+        option.value = modeKey;
+        option.text = CONFIG.mode[modeKey].name;
+        modeSelect.add(option);
+    })
+
     setupGame();
 
     //Listen for clicks on game table
     gameTableHTML.onmousedown = e => {
         e = e || window.event;
  
-        let target = e.target, isRightBtn, unmarkFlag;
+        if(!CONFIG.gamePlayable) return;
+
+        let target = e.target, 
+            isRightBtn, 
+            unmarkFlag;
         
         if("which" in e) {
             //Gecko (Firefox), Webkit (Safari/Chrome) & Opera

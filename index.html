@@ -22,10 +22,16 @@
     <![endif]-->
     <h1>Mine Sweeper Game</h1>
 
+    <select id="mode-setting"></select>
+    <button type="button" onclick="setupGame()">
+      New Game
+    </button>
+
     <script>
         const CONFIG = {
             mode: {
                 easy:{
+                   name: "Easy",
                    size: {
                        rows: 10,
                        cols: 10,
@@ -33,6 +39,7 @@
                    bombs: 10 
                 },
                 medium:{
+                   name: "Medium",
                    size: {
                        rows: 20,
                        cols: 20,
@@ -40,6 +47,7 @@
                    bombs: 50 
                 },
                 hard:{
+                   name: "Hard",
                    size: {
                        rows: 20,
                        cols: 30,
@@ -53,6 +61,9 @@
 
             //Bomb Locations
             bombLocations: [],
+
+            //Game is playable
+            gamePlayable: true,
         }
     </script>
 
