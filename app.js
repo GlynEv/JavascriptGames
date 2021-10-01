@@ -60,6 +60,7 @@ const setupGame = () => {
 
     CONFIG.gamePlayable = true;
     setBombsRemaining();
+    timerControl("start");
 };
 
 const getCellIDsAround = (row,col) => {
@@ -95,6 +96,7 @@ const newCellClicked = (cell, isRightBtn) => {
         col = parseInt(cell.getAttribute("col"), 0xa),
         hasBomb = parseInt(cell.getAttribute("hasBomb"), 0xa) == 1,
         bombsAroundCell = parseInt(cell.getAttribute("bombsAroundCell"), 0xa);
+
     
     //Right Click (mark as bomb - Flag)
     if(isRightBtn == true) {
@@ -119,61 +121,107 @@ const newCellClicked = (cell, isRightBtn) => {
             cell.appendChild(flagImage);
         }
         setBombsRemaining();
-        
+    } else {
+        //Lose game
+        if(hasBomb){
+            timerControl(); //Stop timer
+            alert("DEAD");
 
-        return;
+
+            //Show all bombs
+            let cell,bombImage;
+            CONFIG.bombLocations.map(cellID => {
+                cell = document.getElementById(cellIDName + cellID);
+                bombImage = document.createElement("img");
+                bombImage.setAttribute("src", "images/bomb.png");
+                bombImage.setAttribute("width", "100%");
+                bombImage.setAttribute("height", "100%");
+                bombImage.setAttribute("alt", "bomb");
+                bombImage.classList.add(flagClassName);
+                cell.innerHTML = "";
+                cell.appendChild(bombImage);
+            })
+            CONFIG.gamePlayable = false;
+            return;
+        }
+
+        //Show Content
+        cell.classList.remove(newCellClassName);
+
+        //If blank cell
+        if(bombsAroundCell == 0){
+            //Click around each square
+            let cellToClick;
+
+            getCellIDsAround(row, col).map(aroundCellID => {
+
+                //Click on cell
+                cellToClick = document.getElementById(cellIDName + aroundCellID);
+                if (cellToClick && cellToClick.matches("." + newCellClassName)) 
+                newCellClicked(cellToClick);
+            })
+        }
     }
 
-    //Lose game
-    if(hasBomb){
-        alert("DEAD");
-
-
-        //Show all bombs
-        let cell,bombImage;
-        CONFIG.bombLocations.map(cellID => {
-            cell = document.getElementById(cellIDName + cellID);
-            bombImage = document.createElement("img");
-            bombImage.setAttribute("src", "images/bomb.png");
-            bombImage.setAttribute("width", "100%");
-            bombImage.setAttribute("height", "100%");
-            bombImage.setAttribute("alt", "bomb");
-            bombImage.classList.add(flagClassName);
-            cell.innerHTML = "";
-            cell.appendChild(bombImage);
+    // Win Game Check
+    const bombLocations = CONFIG.bombLocations,
+        currentMarkedBombsIDs = currentMarkedBombs();
+        unclickCells = gameTableHTML.getElementsByClassName(newCellClassName).length - gameTableHTML.getElementsByClassName(flagClassName).length;
+    
+    if(unclickCells === 0 && bombLocations.length === currentMarkedBombsIDs.length){
+        // Validate marked bombs
+        let foundBombsCorrect = 0;
+        currentMarkedBombsIDs.map(cellID => {
+            if(bombLocations.indexOf(cellID) > -1) foundBombsCorrect++;
         })
-        CONFIG.gamePlayable = false;
-        return;
+        if(foundBombsCorrect === bombLocations.length){
+            //Game Won
+            alert ("GAME WON");
+            timerControl(); // Stop timer
+            CONFIG.gamePlayable = false;
+        }
+    }
+  
+}
+
+const currentMarkedBombs = () => {
+    const currentMarkedCells = document.getElementsByClassName(flagClassName);
+
+    let i, cell, row, col, currentMarkedIds = [];
+    for(i = 0; i < currentMarkedCells.length; i++) {
+        cell = currentMarkedCells[i].parentNode;
+        row = parseInt(cell.getAttribute("row"), 0xa);
+        col = parseInt(cell.getAttribute("col"), 0xa);
+
+        currentMarkedIds.push(makeCellID(row, col));
     }
 
-    //Show Content
-    cell.classList.remove(newCellClassName);
-
-    //If blank cell
-    if(bombsAroundCell == 0){
-        //Click around each square
-        let cellToClick;
-
-        getCellIDsAround(row, col).map(aroundCellID => {
-
-            //Click on cell
-            cellToClick = document.getElementById(cellIDName + aroundCellID);
-            if (cellToClick && cellToClick.matches("." + newCellClassName)) 
-            newCellClicked(cellToClick);
-        })
-    }
-
-
-
+    return currentMarkedIds;
 }
 
 const setBombsRemaining = () => {
     const totalGameBombs = CONFIG.bombLocations.length,
-    currentMarkedBombCount = document.getElementsByClassName(flagClassName).length,
+    currentMarkedBombCount = currentMarkedBombs().length,
     remaining = totalGameBombs - currentMarkedBombCount;
 
     document.getElementById("game-bombs-remaining").innerHTML = remaining;
 }
+
+const timerHTML = document.getElementById("game-timer");
+let timerInterval
+const timerControl = action => {  
+    clearInterval(timerInterval);
+    timerTime = 0;
+    if(action == "start"){
+        //Start Timer 
+        timerInterval = setInterval(() =>{
+            timerTime++;
+            timerHTML.innerHTML = timerTime;
+        }, 1000)
+    
+    }
+
+};
 
 (() =>{
 
