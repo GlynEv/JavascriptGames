@@ -59,6 +59,7 @@ const setupGame = () => {
     }
 
     CONFIG.gamePlayable = true;
+    setBombsRemaining();
 };
 
 const getCellIDsAround = (row,col) => {
@@ -117,7 +118,7 @@ const newCellClicked = (cell, isRightBtn) => {
             flagImage.classList.add(flagClassName);
             cell.appendChild(flagImage);
         }
-
+        setBombsRemaining();
         
 
         return;
@@ -164,6 +165,14 @@ const newCellClicked = (cell, isRightBtn) => {
 
 
 
+}
+
+const setBombsRemaining = () => {
+    const totalGameBombs = CONFIG.bombLocations.length,
+    currentMarkedBombCount = document.getElementsByClassName(flagClassName).length,
+    remaining = totalGameBombs - currentMarkedBombCount;
+
+    document.getElementById("game-bombs-remaining").innerHTML = remaining;
 }
 
 (() =>{
