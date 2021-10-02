@@ -127,6 +127,7 @@ const newCellClicked = (cell, isRightBtn) => {
             flagImage.setAttribute("alt", "flag");
             flagImage.classList.add(flagClassName);
             cell.appendChild(flagImage);
+            cell.setAttribute("hasFlag", 1);
         }
         setBombsRemaining();
     } else {
@@ -148,6 +149,7 @@ const newCellClicked = (cell, isRightBtn) => {
                 bombImage.classList.add(flagClassName);
                 cell.innerHTML = "";
                 cell.appendChild(bombImage);
+                cell.setAttribute("hasFlag", 0);
             })
             CONFIG.gamePlayable = false;
             return;
@@ -165,7 +167,7 @@ const newCellClicked = (cell, isRightBtn) => {
 
                 //Click on cell
                 cellToClick = document.getElementById(cellIDName + aroundCellID);
-                if (cellToClick && cellToClick.matches("." + newCellClassName)) 
+                if (cellToClick && cellToClick.matches("." + newCellClassName) && parseInt(cellToClick.getAttribute("hasFlag"), 0xa) != 1)
                 newCellClicked(cellToClick);
             })
         }
