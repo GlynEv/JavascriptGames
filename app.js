@@ -8,26 +8,30 @@ const setupGame = () => {
 
     CONFIG.currentMode = modeSelect.value;
     const gameMode = getCurrentGameMode(),
-        gameSize = gameMode.size;
+        gameModeBombs = gameMode.bombs,
+        gameSize = gameMode.size, 
+        gameSizeRows = gameSize.rows, 
+        gameSizeCols = gameSize.cols;
 
     //Generate Bomb Locations
     const bombCells = [];
-    let cellBombID;
+    let cellBombID, maxLoops = 10000;
 
-    while(bombCells.length < gameMode.bombs) {
-        cellBombID = Math.floor(Math.random() * (gameSize.rows * gameSize.cols)) + 1;
+    while(bombCells.length < gameModeBombs && maxLoops > 0) {
+        cellBombID = Math.floor(Math.random() * (gameSizeRows * gameSizeCols)) + 1;
         if(bombCells.indexOf(cellBombID) == -1) bombCells.push(cellBombID);
+        maxLoops--;
     }
-
     CONFIG.bombLocations = bombCells;
 
     //BuildRows
     gameTableHTML.innerHTML = "";
     let i, row, col, cellID, bombsAroundCell, cellSpan, cellContent;
-    for(i = 0; i < gameSize.rows; i++) {
+
+    for(i = 0; i < gameSizeRows; i++) {
         row = gameTableHTML.insertRow(i);
 
-        for(j = 1; j <= gameSize.cols; j++) {
+        for(j = 1; j <= gameSizeCols; j++) {
             col = row.insertCell(j-1);
             col.classList.add(newCellClassName);
             col.setAttribute("row", i);
@@ -67,13 +71,17 @@ const getCellIDsAround = (row,col) => {
 
     //Loop Rows and Cols around
     const gameMode = getCurrentGameMode(), 
-    aroundCellIDs = [];
+        gameModeRows = gameMode.size.rows,
+        gameModeCols = gameMode.size.cols,
+        maxRows = row + 2,
+        maxCols = col + 2,
+        aroundCellIDs = [];
 
     let i, j, newCellID;
-    for(i = row - 1; i < row + 2; i++){
-        for(j = col - 1; j < col + 2; j++){
+    for(i = row - 1; i < maxRows; i++){
+        for(j = col - 1; j < maxCols; j++){
             newCellID = makeCellID(i, j);
-            if(1 >= 0 && i < gameMode.size.rows && j > 0 && j <= gameMode.size.cols && makeCellID(row, col) != newCellID) 
+            if(1 >= 0 && i < gameModeRows && j > 0 && j <= gameModeCols && makeCellID(row, col) != newCellID) 
                 aroundCellIDs.push(newCellID);
         }
     }
@@ -185,26 +193,25 @@ const newCellClicked = (cell, isRightBtn) => {
 }
 
 const currentMarkedBombs = () => {
-    const currentMarkedCells = document.getElementsByClassName(flagClassName);
+    const currentMarkedCells = gameTableHTML.getElementsByClassName(flagClassName),
+        totalMarkedCells = currentMarkedCells.length;
 
-    let i, cell, row, col, currentMarkedIds = [];
-    for(i = 0; i < currentMarkedCells.length; i++) {
+    let i, cell, currentMarkedIds = [];
+    for(i = 0; i < totalMarkedCells; i++) {
         cell = currentMarkedCells[i].parentNode;
-        row = parseInt(cell.getAttribute("row"), 0xa);
-        col = parseInt(cell.getAttribute("col"), 0xa);
-
-        currentMarkedIds.push(makeCellID(row, col));
+        currentMarkedIds.push(
+            makeCellID(
+                parseInt(cell.getAttribute("row"), 0xa),
+                parseInt(cell.getAttribute("col"), 0xa)
+            )
+        );
     }
 
     return currentMarkedIds;
 }
 
 const setBombsRemaining = () => {
-    const totalGameBombs = CONFIG.bombLocations.length,
-    currentMarkedBombCount = currentMarkedBombs().length,
-    remaining = totalGameBombs - currentMarkedBombCount;
-
-    document.getElementById("game-bombs-remaining").innerHTML = remaining;
+    document.getElementById("game-bombs-remaining").innerHTML = CONFIG.bombLocations.length - currentMarkedBombs().length;
 }
 
 const timerHTML = document.getElementById("game-timer");
