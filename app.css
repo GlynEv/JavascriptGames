@@ -2,39 +2,69 @@
     width: 45px;
     height: 45px;
 
+    border: 1px solid #d35400;
+}
+
+#mode-setting {
+    border-radius: 5px;
+    background-color:#ee995d;
     border: 1px solid #000;
+}
+
+#gamebtn{
+    border-radius: 5px;
+    background-color:#ee995d;
+    border: 1px solid #000;
+}
+
+#wrapper {
+    overflow: hidden; /* Added this to contain floated children */
 }
 
 #gameTimer {
     border-radius: 15px;
     width: 80px;
-    height: 80px;
-    border: 1px solid #000;
+    height: 75px;
+    border: 2px solid #d35400;
+    background-color: #ffefd5;
     padding-bottom: 20px;
-    margin-top: 15px;
+    margin-top: 18px;
+    margin-right: 20px;
     text-align: center;
+    float:left;
 }
 
-#gameTimer h4{
-    border: 1px solid #000;  
+#gameTimer h4{ 
+    padding: not;
+    margin-bottom: 0rem;
 }
 
 #gameTimer span{
-    display:inline-block;
-    border: 1px solid #000;
+    margin-top: 0rem;
     font-size:2em;
 }
 
 #gameBombRemaining {
     border-radius: 15px;
     width: 80px;
-    height: 80px;
-    border: 1px solid #000;
+    height: 75px;
+    border: 2px solid #d35400;
+    background-color: #ffefd5;
     padding-left: 10px;
     padding-right: 10px;
     padding-bottom: 20px;
-    margin-top: 15px;
     text-align: center;
+    float:left;
+}
+
+#gameBombRemaining h4{ 
+    margin-top: 5px;
+    margin-bottom: 0rem;
+}
+
+#gameBombRemaining span{
+    margin-top: 0rem;
+    font-size:2em;
 }
 
 .new-cell {

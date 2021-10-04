@@ -23,21 +23,22 @@
     <h1>Mine Sweeper Game</h1>
 
     <select id="mode-setting"></select>
-    <button type="button" onclick="setupGame()">
+    <button id="gamebtn" type="button" onclick="setupGame()">
       New Game
     </button>
 
-    <div id="gameTimer">
-      <h4>Time:</h4>
-      <span id="game-timer">0</span>
-    </div>
-    <br/>
-    <div id="gameBombRemaining">
-      <h4>Bombs Remaining</h4>
-      <span id="game-bombs-remaining"></span>
-    </div>
-    <br/>
-
+    <div id="wrapper">
+      <div id="gameTimer">
+        <h4>Time:</h4>
+        <span id="game-timer">0</span>
+      </div>
+      <br/>
+      <div id="gameBombRemaining">
+        <h4>Bombs Remaining:</h4>
+        <span id="game-bombs-remaining"></span>
+      </div>
+      <br/>
+  </div>
     <script>
         const CONFIG = {
             mode: {
